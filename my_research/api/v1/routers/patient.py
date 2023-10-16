@@ -17,7 +17,7 @@ async def reg_patient(
         reg_patient_in: RegPatientIn = Body(...)
 ):
     patient = await db.patient_collection.find_document_by_insurance_policy_number(insurance_policy_number=reg_patient_in.insurance_policy_number)
-    print(patient is None)
+    
     if patient is not None:
         raise HTTPException(status_code=400, detail="patient is exist")
         

@@ -4,6 +4,7 @@ import logging
 from motor.motor_asyncio import AsyncIOMotorClient, AsyncIOMotorDatabase
 from pymongo import MongoClient
 from pymongo.errors import OperationFailure, ConnectionFailure
+from my_research.db.collections.conlusion import ConlusionCollection
 
 from my_research.db.collections.mailcode import MailCodeCollection
 from my_research.db.collections.user import UserCollection
@@ -53,6 +54,12 @@ class DB:
             pymongo_db=self.pymongo_db
         )
         self.collections.append(self.patient_collection)
+
+        self.conlusion_collection: ConlusionCollection = ConlusionCollection.from_mongo_db(
+            motor_db=self.motor_db,
+            pymongo_db=self.pymongo_db
+        )
+        self.collections.append(self.conlusion_collection)
 
     async def ensure_all_indexes(self):
         self.log.info('ensuring all indexes')

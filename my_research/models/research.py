@@ -7,6 +7,5 @@ class Research(BaseDBM):
     # db fields
     patient_id: Optional[int] = Field(alias=ResearchFields.patient_id)
     type: Optional[str] = Field(alias=ResearchFields.type)
-    result: Optional[str] = Field(alias=ResearchFields.result)
     filename: Optional[str] = Field(alias=ResearchFields.filename)
     user_id: Optional[int] = Field(alias=ResearchFields.user_id)

@@ -6,7 +6,6 @@ from my_research.db.collections.base import BaseCollection, BaseFields
 class ResearchFields(BaseFields):
     patient_id = "patient_id"
     type = "type"
-    result = "result"
     filename = "filename"
     user_id = "user_id"
 

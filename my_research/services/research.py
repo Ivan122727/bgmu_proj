@@ -8,14 +8,12 @@ from my_research.models.research import Research
 async def create_research(
         *,
         patient_id: Optional[int] = None,
-        result: Optional[str] = None,
         type: Optional[str] = None,
         filename: Optional[str] = None,
         user_id: Optional[int] = None,
 ):
     doc_to_insert = {
         ResearchFields.patient_id: patient_id,
-        ResearchFields.result: result,
         ResearchFields.type: type,
         ResearchFields.filename: filename,
         ResearchFields.user_id: user_id

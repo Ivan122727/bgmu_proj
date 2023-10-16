@@ -11,11 +11,11 @@ class UserRoles(Enumeration):
 
 
 class ResearchTypes(Enumeration):
-    lw = "lw"
-    research = "research"
+    img = "img"
+    file = "file"
 
     def set():
-        return {"lw", "research"}
+        return {"img", "file"}
 
 
 class MailCodeTypes(Enumeration):
