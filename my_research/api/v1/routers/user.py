@@ -62,6 +62,6 @@ async def delete_user(
 
 
 
-@router.get('/me', response_model=UserOut, tags=['User'])
+@router.get('/user.me', response_model=UserOut, tags=['User'])
 async def user_me(user: User = Depends(get_strict_current_user)):
     return UserOut.parse_dbm_kwargs(**user.dict()) 
