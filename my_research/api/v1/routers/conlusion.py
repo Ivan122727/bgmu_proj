@@ -37,7 +37,7 @@ async def reg_conlusion(
     )
 
 
-@router.post('/conlusion.edit', response_model=SensitiveConlusionOut, tags=['Research'])
+@router.put('/conlusion.edit', response_model=SensitiveConlusionOut, tags=['Research'])
 async def edit_conlusion(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
     edit_conlusion_in: EditConlusionIn = Body(...),
@@ -78,7 +78,7 @@ async def get_conlusion_by_id(
     return SensitiveConlusionOut.parse_dbm_kwargs(**conlusion.dict())
 
 
-@router.get('/conlusion.delete', response_model=OperationStatusOut, tags=['Research'])
+@router.delete('/conlusion.delete', response_model=OperationStatusOut, tags=['Research'])
 async def delete_conlusion(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])), 
     conlusion_id: int = Query(...)

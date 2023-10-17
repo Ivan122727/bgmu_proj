@@ -33,7 +33,7 @@ async def reg_patient(
     )
 
 
-@router.post('/patient.edit', response_model=Optional[SensitivePatientOut], tags=['Patient'])
+@router.put('/patient.edit', response_model=Optional[SensitivePatientOut], tags=['Patient'])
 async def get_patient_by_id(
         user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
         edit_patient_in: EditPatientIn = Body(...)
@@ -72,7 +72,7 @@ async def get_patient_by_id(
 
     return PatientOut.parse_dbm_kwargs(**patient.dict())
 
-@router.get('/patient.delete', response_model=OperationStatusOut, tags=['Patient'])
+@router.delete('/patient.delete', response_model=OperationStatusOut, tags=['Patient'])
 async def delete_patient(
         user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
         patient_id: int = Query(...)

@@ -48,7 +48,7 @@ async def reg_research(
 
 
 
-@router.post('/research.edit', response_model=Optional[SensitiveResearchOut], tags=['Research'])
+@router.put('/research.edit', response_model=Optional[SensitiveResearchOut], tags=['Research'])
 async def edit_research(
     request: Request,
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
@@ -97,7 +97,7 @@ async def delete_research(
         raise HTTPException(status_code=400, detail="research is none")
     return SensitiveResearchOut.parse_dbm_kwargs(**research.dict())
 
-@router.get('/research.delete', response_model=OperationStatusOut, tags=['Research'])
+@router.delete('/research.delete', response_model=OperationStatusOut, tags=['Research'])
 async def delete_research(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])), 
     research_id: int = Query(...)

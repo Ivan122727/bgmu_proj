@@ -33,7 +33,7 @@ async def get_user_by_int_id(int_id: int, user: User = Depends(make_strict_depen
     return UserOut.parse_dbm_kwargs(**user.dict())
 
 
-@router.get('/user.edit_role', response_model=UserOut, tags=['User'])
+@router.put('/user.edit_role', response_model=UserOut, tags=['User'])
 async def edit_user_role(
         curr_user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev])),
         user_int_id: int = Query(...),
@@ -49,7 +49,7 @@ async def edit_user_role(
 
 
 
-@router.get('/user.delete', response_model=OperationStatusOut, tags=['User'])
+@router.delete('/user.delete', response_model=OperationStatusOut, tags=['User'])
 async def delete_user(
         curr_user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev])),
         user_int_id: int = Query(...),
