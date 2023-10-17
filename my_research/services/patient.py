@@ -1,9 +1,13 @@
 from typing import Optional
 from my_research.db.collections.base import Id
+from my_research.db.collections.conlusion import ConlusionFields
 
 from my_research.db.collections.patient import PatientFields
+from my_research.db.collections.research import ResearchFields
 from my_research.models.patient import Patient
 from my_research.core.consts import db
+from my_research.services.conlusion import get_research_conclusions
+from my_research.services.research import get_patient_researches
 
 async def create_patient(
         *,
@@ -24,12 +28,15 @@ async def get_patient(
         *,
         id_: Optional[Id] = None,
         int_id: Optional[int] = None,
+        insurance_policy_number: Optional[str] = None
 ) -> Optional[Patient]:
     filter_ = {}
     if id_ is not None:
         filter_.update(db.patient_collection.create_id_filter(id_=id_))
     if int_id is not None:
         filter_[PatientFields.int_id] = int_id
+    if insurance_policy_number is not None:
+        filter_[PatientFields.insurance_policy_number] = insurance_policy_number
 
     if not filter_:
         raise ValueError("not filter_")

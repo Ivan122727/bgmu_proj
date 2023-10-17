@@ -9,6 +9,13 @@ class RegConlusionIn(BaseSchemaIn):
     desc: Optional[str]
     diagnosis: Optional[str]
 
+class EditConlusionIn(BaseSchemaIn):
+    conlusion_id: int
+    name: Optional[str]
+    coord_text: Optional[str]
+    desc: Optional[str]
+    diagnosis: Optional[str]
+
 class ConlusionOut(BaseOutDBMSchema):
     research_id: Optional[int]
     name: Optional[str]

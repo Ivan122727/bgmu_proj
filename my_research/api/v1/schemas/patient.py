@@ -7,6 +7,12 @@ class RegPatientIn(BaseSchemaIn):
     insurance_policy_number: str
 
 
+class EditPatientIn(BaseSchemaIn):
+    patient_id: int
+    fullname: str
+    date_birth: str
+    insurance_policy_number: str
+
 class PatientOut(BaseOutDBMSchema):
     fullname: str
     date_birth: str

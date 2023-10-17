@@ -1,5 +1,6 @@
 from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException, Query
+from my_research.api.v1.schemas.base import OperationStatusOut
 
 from my_research.api.v1.schemas.user import UserExistsStatusOut, UserOut
 from my_research.core.enumerations import UserRoles
@@ -45,6 +46,20 @@ async def edit_user_role(
         raise HTTPException(status_code=400, detail="invalid role")
     await db.user_collection.update_document_by_id(id_=user.oid, set_={UserFields.roles: [role]})
     return UserOut.parse_dbm_kwargs(**(await get_user(id_=user.oid)).dict())
+
+
+
+@router.get('/user.delete', response_model=OperationStatusOut, tags=['User'])
+async def delete_user(
+        curr_user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev])),
+        user_int_id: int = Query(...),
+):
+    user = await get_user(id_=user_int_id)
+    if user is None:
+        raise HTTPException(status_code=400, detail="user is none")
+    await db.user_collection.remove_document({UserFields.int_id: user_int_id})
+    return OperationStatusOut(is_done=True)    
+
 
 
 @router.get('/me', response_model=UserOut, tags=['User'])

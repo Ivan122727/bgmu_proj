@@ -2,15 +2,18 @@ from pathlib import Path
 from typing import Optional
 from uuid import uuid4
 from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, Request, UploadFile
+from my_research.api.v1.schemas.base import OperationStatusOut
 
-from my_research.api.v1.schemas.research import SensitiveResearchOut
+from my_research.api.v1.schemas.research import ResearchOut, SensitiveResearchOut
 from my_research.core.enumerations import UserRoles
 from my_research.core.settings import STATIC_DIRPATH
+from my_research.db.collections.conlusion import ConlusionFields
+from my_research.db.collections.research import ResearchFields
 from my_research.deps.user_deps import make_strict_depends_on_roles
 from my_research.models.user import User
 from my_research.services.patient import get_patient
 from my_research.services.research import create_research, get_patient_researches, get_research
-
+from my_research.core.consts import db
 
 router = APIRouter()
 
@@ -44,6 +47,35 @@ async def reg_research(
     )
 
 
+
+@router.post('/research.edit', response_model=Optional[SensitiveResearchOut], tags=['Research'])
+async def edit_research(
+    request: Request,
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
+    research_id: int = Form(...),
+    type: str = Form(...),
+    uploaded_res: Optional[UploadFile] = File(None),
+):
+    filename = None
+    if uploaded_res is not None:
+        filename: str = str(uuid4())
+        type_: str = uploaded_res.filename.split('.')[-1].strip()
+        if type_:
+            filename += '.' + type_
+
+        path = Path(STATIC_DIRPATH).joinpath(filename)
+        with open(path, mode='wb') as f:
+            f.write(await uploaded_res.read())
+    
+    await db.research_collection.update_document_by_id(id_=research_id, set_={
+        ResearchFields.type: type,
+        ResearchFields.filename: filename
+    })
+    await db.conlusion_collection.remove_documents({ConlusionFields.research_id: research_id})
+    updated_research = await get_research(id_=research_id)
+    return ResearchOut.parse_dbm_kwargs(**updated_research.dict())
+    
+
 @router.get('/research.all', response_model=list[SensitiveResearchOut], tags=['Research'])
 async def get_all_research(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
@@ -56,7 +88,7 @@ async def get_all_research(
 
 
 @router.get('/research.by_id', response_model=Optional[SensitiveResearchOut], tags=['Research'])
-async def get_research_by_int_id(
+async def delete_research(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])), 
     research_id: int = Query(...)
     ):
@@ -64,3 +96,16 @@ async def get_research_by_int_id(
     if research is None:
         raise HTTPException(status_code=400, detail="research is none")
     return SensitiveResearchOut.parse_dbm_kwargs(**research.dict())
+
+@router.get('/research.delete', response_model=OperationStatusOut, tags=['Research'])
+async def delete_research(
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])), 
+    research_id: int = Query(...)
+    ):
+    research = await get_research(id_=research_id)
+    if research is None:
+        raise HTTPException(status_code=400, detail="research is none")
+    
+    await db.research_collection.remove_by_int_id(int_id=research_id)
+    await db.conlusion_collection.remove_documents({ConlusionFields.research_id: research_id})
+    return OperationStatusOut(is_done=True)
