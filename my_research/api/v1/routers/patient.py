@@ -43,7 +43,7 @@ async def get_patient_by_id(
         raise HTTPException(status_code=400, detail="patient is None")
 
     patient_by_policy_number = await get_patient(insurance_policy_number=edit_patient_in.insurance_policy_number)
-    if patient_by_policy_number is not None:
+    if patient_by_policy_number is not None and patient_by_policy_number.int_id != patient.int_id:
         raise HTTPException(status_code=400, detail="patient by policy number is exist")
     
     await db.patient_collection.update_document_by_id(id_=edit_patient_in.patient_id, set_={

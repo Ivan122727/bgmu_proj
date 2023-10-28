@@ -1,5 +1,5 @@
 from typing import Optional
-from my_research.api.v1.schemas.base import BaseOutDBMSchema, BaseSchemaOut
+from my_research.api.v1.schemas.base import BaseOutDBMSchema, BaseSchemaIn, BaseSchemaOut
 
 
 class UserOut(BaseOutDBMSchema):
@@ -14,3 +14,7 @@ class SensitiveUserOut(UserOut):
 
 class UserExistsStatusOut(BaseSchemaOut):
     is_exists: bool
+
+
+class UpdateUserIn(BaseSchemaIn):
+    fullname: str

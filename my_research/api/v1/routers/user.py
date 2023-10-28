@@ -1,8 +1,8 @@
 from typing import Optional
-from fastapi import APIRouter, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query
 from my_research.api.v1.schemas.base import OperationStatusOut
 
-from my_research.api.v1.schemas.user import UserExistsStatusOut, UserOut
+from my_research.api.v1.schemas.user import UpdateUserIn, UserExistsStatusOut, UserOut
 from my_research.core.enumerations import UserRoles
 from my_research.db.collections.user import UserFields
 from my_research.deps.user_deps import get_strict_current_user, make_strict_depends_on_roles
@@ -47,6 +47,14 @@ async def edit_user_role(
     await db.user_collection.update_document_by_id(id_=user.oid, set_={UserFields.roles: [role]})
     return UserOut.parse_dbm_kwargs(**(await get_user(id_=user.oid)).dict())
 
+
+@router.put('/user.edit', response_model=UserOut, tags=['User'])
+async def edit_user(
+        curr_user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev])),
+        update_data: UpdateUserIn = Body(...)
+):
+    await db.user_collection.update_document_by_id(id_=curr_user.int_id, set_={UserFields.fullname: update_data.fullname})
+    return UserOut.parse_dbm_kwargs(**(await get_user(id_=curr_user.int_id)).dict())
 
 
 @router.delete('/user.delete', response_model=OperationStatusOut, tags=['User'])
