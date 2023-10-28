@@ -50,10 +50,10 @@ async def edit_user_role(
 
 @router.put('/user.edit', response_model=UserOut, tags=['User'])
 async def edit_user(
-        curr_user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev])),
-        update_data: UpdateUserIn = Body(...)
+        curr_user: User = Depends(get_strict_current_user),
+        edit_data: UpdateUserIn = Body(...)
 ):
-    await db.user_collection.update_document_by_id(id_=curr_user.int_id, set_={UserFields.fullname: update_data.fullname})
+    await db.user_collection.update_document_by_id(id_=curr_user.int_id, set_={UserFields.fullname: edit_data.fullname})
     return UserOut.parse_dbm_kwargs(**(await get_user(id_=curr_user.int_id)).dict())
 
 
