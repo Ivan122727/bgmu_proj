@@ -78,7 +78,7 @@ async def edit_research(
 
 @router.get('/research.all', response_model=list[SensitiveResearchOut], tags=['Research'])
 async def get_all_research(
-    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])),
     patient_id: int = Query(...)
     ):
     patient = await get_patient(id_=patient_id)
@@ -89,7 +89,7 @@ async def get_all_research(
 
 @router.get('/research.by_id', response_model=Optional[SensitiveResearchOut], tags=['Research'])
 async def delete_research(
-    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])), 
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])), 
     research_id: int = Query(...)
     ):
     research = await get_research(id_=research_id)

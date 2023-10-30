@@ -57,13 +57,13 @@ async def get_patient_by_id(
 
 
 @router.get('/patient.all', response_model=list[PatientOut], tags=['Patient'])
-async def get_all_patients(user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev]))):
+async def get_all_patients(user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user]))):
     return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in await get_patients()]
 
 
 @router.get('/patient.by_id', response_model=Optional[SensitivePatientOut], tags=['Patient'])
 async def get_patient_by_id(
-        user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
+        user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])),
         patient_id: int = Query(...)
 ):
     patient = await get_patient(id_=patient_id)

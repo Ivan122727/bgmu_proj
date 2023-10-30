@@ -58,7 +58,7 @@ async def edit_conlusion(
 
 @router.get('/conlusion.all', response_model=list[SensitiveConlusionOut], tags=['Research'])
 async def get_all_conlusions(
-    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])),
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])),
     research_id: int = Query(...)
     ):
     research = await get_research(id_=research_id)
@@ -69,7 +69,7 @@ async def get_all_conlusions(
 
 @router.get('/conlusion.by_id', response_model=Optional[SensitiveConlusionOut], tags=['Research'])
 async def get_conlusion_by_id(
-    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev])), 
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])), 
     conlusion_id: int = Query(...)
     ):
     conlusion = await get_conlusion(id_=conlusion_id)
