@@ -14,11 +14,14 @@ async def create_patient(
         fullname: Optional[str] = None,
         date_birth: Optional[str] = None,
         insurance_policy_number: Optional[str] = None,
+        additional_params: list[dict] = None
+        
 ):
     doc_to_insert = {
         PatientFields.fullname: fullname,
         PatientFields.date_birth: date_birth,
-        PatientFields.insurance_policy_number: insurance_policy_number
+        PatientFields.insurance_policy_number: insurance_policy_number,
+        PatientFields.additional_params: additional_params
     }
     inserted_doc = await db.patient_collection.insert_document(doc_to_insert)
     created_patient = Patient.parse_document(inserted_doc)

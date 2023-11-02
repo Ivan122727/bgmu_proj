@@ -10,7 +10,7 @@ class PatientFields(BaseFields):
     fullname = "fullname"
     date_birth = "date_birth"
     insurance_policy_number = "insurance_policy_number"
-
+    additional_params = "additional_params"
 
 class PatientCollection(BaseCollection):
     COLLECTION_NAME = "patient"

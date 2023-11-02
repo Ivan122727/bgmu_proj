@@ -26,7 +26,11 @@ async def reg_patient(
     if patient is not None:
         raise HTTPException(status_code=400, detail="patient is exist")
         
-    patient_created = await create_patient(fullname=reg_patient_in.fullname, date_birth=reg_patient_in.date_birth, insurance_policy_number=reg_patient_in.insurance_policy_number)
+    patient_created = await create_patient(
+        fullname=reg_patient_in.fullname, date_birth=reg_patient_in.date_birth, 
+        insurance_policy_number=reg_patient_in.insurance_policy_number,
+        additional_params=reg_patient_in.additional_params
+    )
 
     return SensitivePatientOut.parse_dbm_kwargs(
         **patient_created.dict()
@@ -49,7 +53,8 @@ async def get_patient_by_id(
     await db.patient_collection.update_document_by_id(id_=edit_patient_in.patient_id, set_={
         PatientFields.fullname: edit_patient_in.fullname,
         PatientFields.date_birth: edit_patient_in.date_birth,
-        PatientFields.insurance_policy_number: edit_patient_in.insurance_policy_number
+        PatientFields.insurance_policy_number: edit_patient_in.insurance_policy_number,
+        PatientFields.additional_params: edit_patient_in.additional_params,
     })
     updated_patient = await get_patient(id_=edit_patient_in.patient_id)
     return PatientOut.parse_dbm_kwargs(**updated_patient.dict())

@@ -8,3 +8,4 @@ class Patient(BaseDBM):
     fullname: Optional[str] = Field(alias=PatientFields.fullname)
     date_birth: Optional[str] = Field(alias=PatientFields.date_birth)
     insurance_policy_number: Optional[str] = Field(alias=PatientFields.insurance_policy_number)
+    additional_params: dict = Field(alias=PatientFields.additional_params, default={})
