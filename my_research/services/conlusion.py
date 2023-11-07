@@ -9,7 +9,7 @@ async def create_conlusion(
         *,
         research_id: Optional[int] = None,
         name: Optional[str] = None,
-        coord_text: Optional[str] = None,
+        coord_data: Optional[dict] = None,
         desc: Optional[str] = None,
         diagnosis: Optional[str] = None,
 ):
@@ -17,7 +17,7 @@ async def create_conlusion(
     doc_to_insert = {
         ConlusionFields.research_id: research_id,
         ConlusionFields.name: name,
-        ConlusionFields.coord_text: coord_text,
+        ConlusionFields.coord_data: coord_data,
         ConlusionFields.desc: desc,
         ConlusionFields.diagnosis: diagnosis
     }

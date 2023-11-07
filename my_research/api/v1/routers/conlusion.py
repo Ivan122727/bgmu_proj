@@ -30,7 +30,7 @@ async def reg_conlusion(
     created_conlusion = await create_conlusion(
         research_id=reg_conlusion_in.research_id, name=reg_conlusion_in.name, 
         desc=reg_conlusion_in.desc, diagnosis=reg_conlusion_in.diagnosis, 
-        coord_text=reg_conlusion_in.coord_text
+        coord_data=reg_conlusion_in.coord_data
         )
     return SensitiveConlusionOut.parse_dbm_kwargs(
         **created_conlusion.dict()
@@ -48,7 +48,7 @@ async def edit_conlusion(
 
     await db.conlusion_collection.update_document_by_id(id_=edit_conlusion_in.conlusion_id, set_={
         ConlusionFields.name: edit_conlusion_in.name,
-        ConlusionFields.coord_text: edit_conlusion_in.coord_text,
+        ConlusionFields.coord_data: edit_conlusion_in.coord_data,
         ConlusionFields.desc: edit_conlusion_in.desc,
         ConlusionFields.diagnosis: edit_conlusion_in.diagnosis,
     })

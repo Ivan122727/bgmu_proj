@@ -7,6 +7,6 @@ class Conlusion(BaseDBM):
     # db fields
     research_id: Optional[int] = Field(alias=ConlusionFields.research_id)
     name: Optional[str] = Field(alias=ConlusionFields.name)
-    coord_text: Optional[str] = Field(alias=ConlusionFields.coord_text)
+    coord_data: Optional[dict] = Field(alias=ConlusionFields.coord_data, default={})
     desc: Optional[str] = Field(alias=ConlusionFields.desc)
     diagnosis: Optional[str] = Field(alias=ConlusionFields.diagnosis)
