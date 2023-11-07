@@ -6,7 +6,7 @@ from my_research.db.collections.base import BaseCollection, BaseFields
 class ConlusionFields(BaseFields):
     research_id = "research_id"
     name = "name"
-    coord_data = "coord_text"
+    coord_data = "coord_data"
     desc = "desc"
     diagnosis = "diagnosis"
 
