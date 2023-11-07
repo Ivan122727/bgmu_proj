@@ -54,3 +54,10 @@ async def get_patients(*, roles: Optional[list[str]] = None) -> list[Patient]:
     if roles is not None:
         patients = [patient for patient in patients if patients.compare_roles(roles)]
     return patients
+
+
+def check_patients(array1: list[str], array2: list[str])->bool:
+    for word in array1:
+        if word in array2:
+            return True
+    return False
