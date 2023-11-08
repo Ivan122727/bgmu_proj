@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from my_research.api.v1.schemas.base import OperationStatusOut
 from my_research.api.v1.schemas.patient import EditPatientIn, PatientOut, RegPatientIn, SensitivePatientOut
 from my_research.core.enumerations import UserRoles
@@ -63,8 +63,19 @@ async def get_patient_by_id(
 
 
 @router.get('/patient.all', response_model=list[PatientOut], tags=['Patient'])
-async def get_all_patients(user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user]))):
-    return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in await get_patients()]
+async def get_all_patients(
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])),
+    st: Optional[int] = Query(default=0), count: Optional[int] = Query(default=10)
+    ):
+
+    count_docs = await db.patient_collection.count_documents()
+    if st + 1 > count_docs:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="wrong pagination params")
+
+    if st + count + 1 > count_docs:
+        count = count_docs - st
+
+    return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in await get_patients()][st: st + count: 1]
 
 
 @router.get('/patient.by_id', response_model=Optional[SensitivePatientOut], tags=['Patient'])

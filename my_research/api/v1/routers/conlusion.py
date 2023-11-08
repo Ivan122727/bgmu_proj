@@ -59,12 +59,20 @@ async def edit_conlusion(
 @router.get('/conlusion.all', response_model=list[SensitiveConlusionOut], tags=['Research'])
 async def get_all_conlusions(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])),
-    research_id: int = Query(...)
+    research_id: int = Query(...), st: Optional[int] = Query(default=0), 
+    count: Optional[int] = Query(default=10)
     ):
+    count_docs = await db.conlusion_collection.count_documents()
+    if st + 1 > count_docs:
+        raise HTTPException(status_code=400, detail="wrong pagination params")
+
+    if st + count + 1 > count_docs:
+        count = count_docs - st
+
     research = await get_research(id_=research_id)
     if research is None:
         raise HTTPException(status_code=400, detail="research is none")
-    return [SensitiveConlusionOut.parse_dbm_kwargs(**conlusion.dict()) for conlusion in await get_research_conclusions(research_id=research_id)]
+    return [SensitiveConlusionOut.parse_dbm_kwargs(**conlusion.dict()) for conlusion in await get_research_conclusions(research_id=research_id)][st: st + count: 1]
 
 
 @router.get('/conlusion.by_id', response_model=Optional[SensitiveConlusionOut], tags=['Research'])

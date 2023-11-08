@@ -79,12 +79,21 @@ async def edit_research(
 @router.get('/research.all', response_model=list[SensitiveResearchOut], tags=['Research'])
 async def get_all_research(
     user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.employee, UserRoles.dev, UserRoles.user])),
-    patient_id: int = Query(...)
+    patient_id: int = Query(...), st: Optional[int] = Query(default=0), 
+    count: Optional[int] = Query(default=10)
     ):
     patient = await get_patient(id_=patient_id)
     if patient is None:
         raise HTTPException(status_code=400, detail="patient is none")
-    return [SensitiveResearchOut.parse_dbm_kwargs(**research.dict()) for research in await get_patient_researches(patient_id=patient_id)]
+        
+    count_docs = await db.research_collection.count_documents()
+    if st + 1 > count_docs:
+        raise HTTPException(status_code=400, detail="wrong pagination params")
+
+    if st + count + 1 > count_docs:
+        count = count_docs - st
+
+    return [SensitiveResearchOut.parse_dbm_kwargs(**research.dict()) for research in await get_patient_researches(patient_id=patient_id)][st: st + count: 1]
 
 
 @router.get('/research.by_id', response_model=Optional[SensitiveResearchOut], tags=['Research'])

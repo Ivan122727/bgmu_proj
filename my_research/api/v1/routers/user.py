@@ -1,5 +1,5 @@
 from typing import Optional
-from fastapi import APIRouter, Body, Depends, HTTPException, Query
+from fastapi import APIRouter, Body, Depends, HTTPException, Query, status
 from my_research.api.v1.schemas.base import OperationStatusOut
 
 from my_research.api.v1.schemas.user import UpdateUserIn, UserExistsStatusOut, UserOut
@@ -21,8 +21,19 @@ async def user_mail_exists(mail: str = Query(...)):
 
 
 @router.get('/user.all', response_model=list[UserOut], tags=['User'])
-async def get_all_users(user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev]))):
-    return [UserOut.parse_dbm_kwargs(**user.dict()) for user in await get_users()]
+async def get_all_users(
+    user: User = Depends(make_strict_depends_on_roles(roles=[UserRoles.dev])),
+    st: Optional[int] = Query(default=0), count: Optional[int] = Query(default=10)
+    ):
+    
+    count_docs = await db.user_collection.count_documents()
+    if st + 1 > count_docs:
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="wrong pagination params")
+
+    if st + count + 1 > count_docs:
+        count = count_docs - st
+    
+    return [UserOut.parse_dbm_kwargs(**user.dict()) for user in await get_users()][st: st + count: 1]
 
 
 @router.get('/user.by_id', response_model=Optional[UserOut], tags=['User'])
