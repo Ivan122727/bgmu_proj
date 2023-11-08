@@ -66,7 +66,7 @@ async def get_all_conlusions(
     if st + 1 > count_docs:
         raise HTTPException(status_code=400, detail="wrong pagination params")
 
-    if st + count + 1 > count_docs:
+    if st + count + 1 > count_docs or st < 0:
         count = count_docs - st
 
     research = await get_research(id_=research_id)

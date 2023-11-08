@@ -72,7 +72,7 @@ async def get_all_patients(
     if st + 1 > count_docs:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="wrong pagination params")
 
-    if st + count + 1 > count_docs:
+    if st + count + 1 > count_docs or st < 0:
         count = count_docs - st
 
     return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in await get_patients()][st: st + count: 1]

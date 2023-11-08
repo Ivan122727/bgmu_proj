@@ -27,7 +27,7 @@ async def get_all_users(
     ):
     
     count_docs = await db.user_collection.count_documents()
-    if st + 1 > count_docs:
+    if st + 1 > count_docs or st < 0:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="wrong pagination params")
 
     if st + count + 1 > count_docs:

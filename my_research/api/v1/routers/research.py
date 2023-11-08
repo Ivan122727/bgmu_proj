@@ -87,7 +87,7 @@ async def get_all_research(
         raise HTTPException(status_code=400, detail="patient is none")
         
     count_docs = await db.research_collection.count_documents()
-    if st + 1 > count_docs:
+    if st + 1 > count_docs or st < 0:
         raise HTTPException(status_code=400, detail="wrong pagination params")
 
     if st + count + 1 > count_docs:
