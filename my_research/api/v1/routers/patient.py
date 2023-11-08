@@ -6,7 +6,7 @@ from my_research.core.enumerations import UserRoles
 from my_research.db.collections.conlusion import ConlusionFields
 from my_research.db.collections.patient import PatientFields
 from my_research.db.collections.research import ResearchFields
-from my_research.deps.user_deps import make_strict_depends_on_roles
+from my_research.deps.user_deps import get_strict_current_user, make_strict_depends_on_roles
 from my_research.models.patient import Patient
 from my_research.models.research import Research
 
@@ -98,8 +98,12 @@ async def delete_patient(
     
 @router.get('/patient.search_by_fio', response_model=list[PatientOut], tags=['Patient'])
 async def search_patient(
-    q: str = Query(...)
+    q: Optional[str] = Query(default=None),
+    user: User = Depends(get_strict_current_user)
 ):
+    if q is None:
+        return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in await get_patients()]
+    
     patients: list[PatientOut] = [Patient.parse_document(doc) async for doc in db.patient_collection.create_cursor()]
     search_words = q.strip().split(" ")
     right_patients: list[Research] = list()
