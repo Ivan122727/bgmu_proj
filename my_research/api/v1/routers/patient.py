@@ -11,7 +11,7 @@ from my_research.models.patient import Patient
 from my_research.models.research import Research
 
 from my_research.models.user import User
-from my_research.services.patient import check_patients, create_patient, get_patient, get_patients
+from my_research.services.patient import check_patients, create_patient, get_patient, get_patients, search_patients
 from my_research.core.consts import db
 from my_research.services.research import get_patient_researches
 
@@ -112,15 +112,4 @@ async def search_patient(
     q: Optional[str] = Query(default=None),
     user: User = Depends(get_strict_current_user)
 ):
-    if q is None:
-        return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in await get_patients()]
-    
-    patients: list[PatientOut] = [Patient.parse_document(doc) async for doc in db.patient_collection.create_cursor()]
-    search_words = q.strip().split(" ")
-    right_patients: list[Research] = list()
-    for patient in patients:
-        words = patient.fullname.strip().split(" ")
-        if check_patients(search_words, words):
-            right_patients.append(patient)
-    
-    return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in right_patients]
+    return [PatientOut.parse_dbm_kwargs(**patient.dict()) for patient in (await search_patients(insurance_policy_number=q))]

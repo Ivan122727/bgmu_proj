@@ -61,3 +61,16 @@ def check_patients(array1: list[str], array2: list[str])->bool:
         if word in array2:
             return True
     return False
+
+async def search_patients(
+   *,
+        insurance_policy_number: Optional[str] = None      
+):
+    count_docs = await db.patient_collection.count_documents()
+    if count_docs > 10:
+        count_docs = 10
+    if insurance_policy_number is None:
+        return [Patient.parse_document(doc) async for doc in db.patient_collection.create_cursor()][:count_docs:]
+    
+    query = {PatientFields.insurance_policy_number: {"$regex": f".*{insurance_policy_number.strip()}.*"}}
+    return [Patient.parse_document(doc) async for doc in (await db.patient_collection.find_documents(filter_=query))][:count_docs:]
