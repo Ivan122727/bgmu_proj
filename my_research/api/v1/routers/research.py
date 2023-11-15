@@ -137,5 +137,6 @@ async def get_sample(
     create_zip_archive(file_paths=file_paths, zip_file_path=f"{STATIC_DIRPATH}/{zip_file_path}")
     return {
             "uri_uri_imgs": f"{settings.api_url}/static/{zip_file_path}", 
+            "count_research": len(researches),
             "researches": researches
     }
