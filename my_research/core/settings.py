@@ -9,7 +9,6 @@ BASE_DIRPATH: str = str(pathlib.Path(__file__).parent.parent.parent)
 STATIC_DIRPATH: str = str(pathlib.Path(__file__).parent.parent.parent) + "/static"
 ENV_FILEPATH: str = os.path.join(BASE_DIRPATH, '.env')
 
-
 class Settings(BaseSettings):
     api_title: str = "MY_RESEARCH API"
     api_prefix: str = "/api"
@@ -25,6 +24,7 @@ class Settings(BaseSettings):
     mailru_password: str
     mailru_server: str = "smtp.mail.ru"
     mailru_port: int = 465
+    api_url: str = "http://127.0.0.1:8000"
 
     cache_dirname: str = "cache"
     cache_dirpath: str = os.path.join(BASE_DIRPATH, cache_dirname)

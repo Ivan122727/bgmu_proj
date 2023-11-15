@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional
 from my_research.db.collections.base import Id
 
@@ -46,3 +47,13 @@ async def get_patient_researches(*, roles: Optional[list[str]] = None, patient_i
     if roles is not None:
         researches = [research for research in researches if research.compare_roles(roles)]
     return researches
+
+async def researches_by_date(
+        from_dt: str,
+        to_dt: str
+):
+    from_dt = datetime.strptime(from_dt, "%Y-%m-%dT%H:%M:%S.%f%z")
+    to_dt = datetime.strptime(to_dt, "%Y-%m-%dT%H:%M:%S.%f%z")
+    query = {"created": {"$gte": from_dt, "$lte": to_dt}}
+    return [Research.parse_document(doc) async for doc in await db.research_collection.find_documents(filter_=query)]
+    

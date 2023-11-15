@@ -248,7 +248,9 @@ class BaseCollection:
             self, filter_: Optional[Filter] = None
     ) -> Optional[list[Document]]:
         filter_ = self.__normalize_filter(filter_)
-        documents = self.motor_collection.find(filter_)
+        documents: list[Document] = self.motor_collection.find(filter_)
+        # cursor: AsyncIOMotorCursor = self.motor_collection.find(filter_)
+        # documents: list[Document] = await cursor.to_list(None)
         return documents
 
     async def find_document_by_id(

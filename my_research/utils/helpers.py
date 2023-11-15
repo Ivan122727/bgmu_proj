@@ -2,6 +2,8 @@ import os
 import zipfile
 from typing import Any
 
+from my_research.core.settings import STATIC_DIRPATH
+
 
 class NotSet:
     pass
@@ -30,3 +32,14 @@ def zipdir(dirpath: str, zip_filepath: str):
                 zip_file.write(os.path.join(root, file),
                                os.path.relpath(os.path.join(root, file),
                                                os.path.join(dirpath, '..')))
+                
+def create_zip_archive(file_paths, zip_file_path):
+    with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for file_path in file_paths:
+            # Имя файла внутри архива (без пути)
+            arcname = os.path.basename(file_path)
+
+            # Добавление файла в архив
+            zip_file.write(file_path, arcname=arcname)
+
+    return zip_file_path

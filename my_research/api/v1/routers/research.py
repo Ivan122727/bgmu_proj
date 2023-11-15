@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 from typing import Optional
 from uuid import uuid4
@@ -12,8 +13,9 @@ from my_research.db.collections.research import ResearchFields
 from my_research.deps.user_deps import make_strict_depends_on_roles
 from my_research.models.user import User
 from my_research.services.patient import get_patient
-from my_research.services.research import create_research, get_patient_researches, get_research
-from my_research.core.consts import db
+from my_research.services.research import create_research, get_patient_researches, get_research, researches_by_date
+from my_research.core.consts import db, settings
+from my_research.utils.helpers import create_zip_archive
 
 router = APIRouter()
 
@@ -118,3 +120,22 @@ async def delete_research(
     await db.research_collection.remove_by_int_id(int_id=research_id)
     await db.conlusion_collection.remove_documents({ConlusionFields.research_id: research_id})
     return OperationStatusOut(is_done=True)
+
+
+
+
+@router.get('/research.get_sample', tags=['Research'])
+async def get_sample(
+    from_dt: str = Query(...),
+    to_dt: str = Query(...)
+):
+    researches = await researches_by_date(from_dt=from_dt, to_dt=to_dt)
+    file_paths = list()
+    for research in researches:
+        file_paths.append(f"{STATIC_DIRPATH}/{research.filename}")
+    zip_file_path = str(uuid4())
+    create_zip_archive(file_paths=file_paths, zip_file_path=f"{STATIC_DIRPATH}/{zip_file_path}")
+    return {
+            "uri_uri_imgs": f"{settings.api_url}/static/{zip_file_path}", 
+            "researches": researches
+    }
