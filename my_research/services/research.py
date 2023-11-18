@@ -1,10 +1,12 @@
 from datetime import datetime
 from typing import Optional
-from my_research.db.collections.base import Id
+from my_research.db.collections.base import Document, Id
 
 from my_research.db.collections.research import ResearchFields
 from my_research.core.consts import db
 from my_research.models.research import Research
+from my_research.models.research_with_conlusion import ResearchWithConlusions
+from my_research.services.conlusion import get_research_conclusions
 
 async def create_research(
         *,
@@ -48,6 +50,10 @@ async def get_patient_researches(*, roles: Optional[list[str]] = None, patient_i
         researches = [research for research in researches if research.compare_roles(roles)]
     return researches
 
+async def parse_research(doc: Document):
+    doc["conlusions"] = await get_research_conclusions(research_id=doc[ResearchFields.int_id])
+    return ResearchWithConlusions.parse_document(doc)
+
 async def researches_by_date(
         from_dt: str,
         to_dt: str
@@ -55,5 +61,5 @@ async def researches_by_date(
     from_dt = datetime.strptime(from_dt, "%Y-%m-%dT%H:%M:%S.%f%z")
     to_dt = datetime.strptime(to_dt, "%Y-%m-%dT%H:%M:%S.%f%z")
     query = {"created": {"$gte": from_dt, "$lte": to_dt}}
-    return [Research.parse_document(doc) async for doc in await db.research_collection.find_documents(filter_=query)]
+    return [await parse_research(doc) async for doc in await db.research_collection.find_documents(filter_=query)]
     
